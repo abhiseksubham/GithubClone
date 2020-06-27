@@ -12,6 +12,7 @@ const table = ({ rowData }) => {
             {console.log({ repo })}
             <Row className="reponame">{repo.name}</Row>
             <Row>
+              <span className="symbol"></span>
               <div className="language">{repo.language}</div>
               <div>Last Updated at{repo.updated_at}</div>
             </Row>

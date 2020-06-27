@@ -18,23 +18,6 @@ class App extends Component {
     this.setState({
       loader: true,
     });
-    try {
-      const response = await fetch(
-        'https://www.mocky.io/v2/5d639f263200008500ba1c0e',
-      );
-      const data = await response.json();
-      this.setState({
-        loader: false,
-        data: data.data.content,
-        filteredData: data.data.content,
-      });
-    } catch (error) {
-      this.setState({
-        loader: false,
-        error: true,
-        errorMessage: error.message,
-      });
-    }
 
     try {
       const response = await fetch(
@@ -72,38 +55,32 @@ class App extends Component {
     const {
       target: { value },
     } = e;
-    const { data } = this.state;
+    console.log({ value });
+    const { repos } = this.state;
     if (!value) {
       this.setState({
-        data: { ...this.state.data },
+        repos: { ...this.state.repos },
       });
     } else {
-      const searchedUsers = data.filter(user => {
-        if (!user.fo_phone_no.indexOf(value)) {
-          return user;
+      const searchedRepo = repos.filter(repo => {
+        // Do Lower Case Comparision
+        if (!repo.name.toLowerCase().indexOf(value.toLowerCase())) {
+          return repo;
         }
       });
-
       this.setState({
-        filteredData: searchedUsers,
+        filteredRepos: searchedRepo,
       });
     }
   };
 
   render() {
-    const {
-      loader,
-      filteredData,
-      data,
-      error,
-      errorMessage,
-      filteredRepos,
-    } = this.state;
+    const { loader, user, error, errorMessage, filteredRepos } = this.state;
     return (
       <>
         {error && <span>{errorMessage}</span>}
         {loader && <span>Loading</span>}
-        {filteredRepos && data && (
+        {filteredRepos && user && (
           <>
             <Row>
               <Col xs={4}>
