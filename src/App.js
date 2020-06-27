@@ -12,6 +12,7 @@ class App extends Component {
     user: null,
     repos: '',
     filteredRepos: '',
+    selectedType: '',
   };
 
   async componentDidMount() {
@@ -51,11 +52,41 @@ class App extends Component {
     }
   }
 
+  setSelected = e => {
+    const {
+      target: { value },
+    } = e;
+    console.log(value);
+    this.setState({ selectedType: value }, () => this.fetchRepos());
+  };
+
+  fetchRepos = () => {
+    let data;
+    try {
+      const response = fetch(
+        'https://api.github.com/users/supreetsingh247?type=' +
+          this.state.selectedType,
+      )
+        .then(response => response.json())
+        .then(data =>
+          this.setState({
+            loader: false,
+            user: data,
+          }),
+        );
+    } catch (error) {
+      this.setState({
+        loader: false,
+        error: true,
+        errorMessage: error.message,
+      });
+    }
+  };
+
   _handleChange = e => {
     const {
       target: { value },
     } = e;
-    console.log({ value });
     const { repos } = this.state;
     if (!value) {
       this.setState({
@@ -82,35 +113,48 @@ class App extends Component {
         {loader && <span>Loading</span>}
         {filteredRepos && user && (
           <>
-            <Row>
-              <Col xs={4}>
-                <Container>
-                  <Row>
-                    {console.log(this.state.user?.avatar_url)}
-                    <img src={this.state.user?.avatar_url}></img>
-                  </Row>
-                  <Row>
-                    <div>{this.state.user?.name}</div>
-                  </Row>
-                  <Row>{this.state.user?.bio}</Row>
-                  <Row>
-                    <div>{this.state.user?.company}</div>
-                  </Row>
-                  <Row>
-                    <div>{this.state.user?.location}</div>
-                  </Row>
-                  <Row>
-                    <div>{this.state.user?.email}</div>
-                  </Row>
-                </Container>
-              </Col>
-              <Col xs={8}>
-                <div className="border">
-                  <input type="text" onChange={this._handleChange} />
-                </div>
-                <Table rowData={filteredRepos} />
-              </Col>
-            </Row>
+            <Container>
+              <Row>
+                <Col xs={4}>
+                  <Container>
+                    <div className="userdata">
+                      <Row>
+                        <img src={this.state.user?.avatar_url}></img>
+                      </Row>
+                      <Row>
+                        <div>{this.state.user?.name}</div>
+                      </Row>
+                      <Row>{this.state.user?.bio}</Row>
+                      <Row>
+                        <div>{this.state.user?.company}</div>
+                      </Row>
+                      <Row>
+                        <div>{this.state.user?.location}</div>
+                      </Row>
+                      <Row>
+                        <div>{this.state.user?.email}</div>
+                      </Row>
+                    </div>
+                  </Container>
+                </Col>
+                <Col xs={8}>
+                  <div className="border">
+                    <input type="text" onChange={this._handleChange} />
+                    <select name="type" id="type" onChange={this.setSelected}>
+                      <option value="all" selected>
+                        Type:All
+                      </option>
+                      <option value="public">Type:Public</option>
+                      <option value="private">Type:Private</option>
+                      <option value="source">Type:Sources</option>
+                      <option value="fork">Type:Forks</option>
+                    </select>
+                  </div>
+                  {filteredRepos?.length === 0 && <div>No data Found</div>}
+                  <Table rowData={filteredRepos} />
+                </Col>
+              </Row>
+            </Container>
           </>
         )}
       </>

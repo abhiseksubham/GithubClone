@@ -5,8 +5,9 @@ import { Row, Col, Container } from 'react-bootstrap';
 const table = ({ rowData }) => {
   return (
     <div>
-      {console.log({ rowData })}
-      {rowData.map(repo => {
+      {console.log(rowData.length)}
+      {rowData.lenght == 0 ? (console.log('here'), 'No Data found') : null}
+      {rowData?.map(repo => {
         return (
           <Container className="unit">
             {console.log({ repo })}
